@@ -1,7 +1,7 @@
 MarteX [MXT] integration/staging tree
 =====================================
 
-http://www.martexcoin.com
+http://www.martexcoin.org
 
 What is the MarteX [MXT] Blockchain?
 ---------------------------
@@ -33,9 +33,9 @@ RPC Port: 10257
 
 BUILD LINUX
 -----------
-1) git clone https://github.com/CryptoCoderz/MXT
+1) git clone https://github.com/martexcoin/martexcoin
 
-2) cd MXT/src
+2) cd martexcoin/src
 
 3) sudo make -f makefile.unix            # Headless
 
@@ -55,7 +55,7 @@ Development Process
 -------------------
 
 The `master` branch is regularly built and tested, but is not guaranteed to be
-completely stable. [Tags](https://github.com/CryptoCoderz/MXT/tags) are created
+completely stable. [Tags](https://github.com/martexcoin/martexcoin/tags) are created
 regularly to indicate new official, stable release versions of MarteX [MXT].
 
 The contribution workflow is described in [CONTRIBUTING.md](CONTRIBUTING.md).
@@ -64,7 +64,7 @@ The developer [mailing list](https://lists.linuxfoundation.org/mailman/listinfo/
 should be used to discuss complicated or controversial changes before working
 on a patch set.
 
-Developer Slack can be found at http://martexcointeam.slack.com.
+Developer Slack can be found at http://martexcoin.slack.com.
 
 Testing
 -------
