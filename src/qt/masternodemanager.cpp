@@ -1,23 +1,30 @@
 #include "masternodemanager.h"
 #include "ui_masternodemanager.h"
-#include "addeditvalverdenode.h"
-#include "valverdenodeconfigdialog.h"
+#include "addeditadrenalinenode.h"
+#include "adrenalinenodeconfigdialog.h"
 
 #include "sync.h"
 #include "clientmodel.h"
 #include "walletmodel.h"
 #include "activemasternode.h"
 #include "masternodeconfig.h"
+#include "masternodeman.h"
 #include "masternode.h"
 #include "walletdb.h"
 #include "wallet.h"
 #include "init.h"
+#include "rpcserver.h"
+#include <boost/lexical_cast.hpp>
+#include <fstream>
+using namespace json_spirit;
+using namespace std;
 
 #include <QAbstractItemDelegate>
 #include <QPainter>
 #include <QTimer>
 #include <QDebug>
 #include <QScrollArea>
+#include <QScroller>
 #include <QDateTime>
 #include <QApplication>
 #include <QClipboard>
@@ -32,22 +39,15 @@ MasternodeManager::MasternodeManager(QWidget *parent) :
     ui->setupUi(this);
 
     ui->editButton->setEnabled(false);
-    ui->getConfigButton->setEnabled(false);
     ui->startButton->setEnabled(false);
-    ui->stopButton->setEnabled(false);
-    ui->copyAddressButton->setEnabled(false);
 
-    ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-    ui->tableWidget_2->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-
-    subscribeToCoreSignals();
+    ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->tableWidget_2->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateNodeList()));
     if(!GetBoolArg("-reindexaddr", false))
         timer->start(30000);
-
-    
 
     updateNodeList();
 }
@@ -57,49 +57,18 @@ MasternodeManager::~MasternodeManager()
     delete ui;
 }
 
-static void NotifyValverdeNodeUpdated(MasternodeManager *page, CValverdeNodeConfig nodeConfig)
-{
-    // alias, address, privkey, collateral address
-    QString alias = QString::fromStdString(nodeConfig.sAlias);
-    QString addr = QString::fromStdString(nodeConfig.sAddress);
-    QString privkey = QString::fromStdString(nodeConfig.sMasternodePrivKey);
-    QString collateral = QString::fromStdString(nodeConfig.sCollateralAddress);
-    
-    QMetaObject::invokeMethod(page, "updateValverdeNode", Qt::QueuedConnection,
-                              Q_ARG(QString, alias),
-                              Q_ARG(QString, addr),
-                              Q_ARG(QString, privkey),
-                              Q_ARG(QString, collateral)
-                              );
-}
-
-void MasternodeManager::subscribeToCoreSignals()
-{
-    // Connect signals to core
-    uiInterface.NotifyValverdeNodeChanged.connect(boost::bind(&NotifyValverdeNodeUpdated, this, _1));
-}
-
-void MasternodeManager::unsubscribeFromCoreSignals()
-{
-    // Disconnect signals from core
-    uiInterface.NotifyValverdeNodeChanged.disconnect(boost::bind(&NotifyValverdeNodeUpdated, this, _1));
-}
-
 void MasternodeManager::on_tableWidget_2_itemSelectionChanged()
 {
     if(ui->tableWidget_2->selectedItems().count() > 0)
     {
         ui->editButton->setEnabled(true);
-        ui->getConfigButton->setEnabled(true);
         ui->startButton->setEnabled(true);
-        ui->stopButton->setEnabled(true);
-	ui->copyAddressButton->setEnabled(true);
     }
 }
 
-void MasternodeManager::updateValverdeNode(QString alias, QString addr, QString privkey, QString collateral)
+void MasternodeManager::updateAdrenalineNode(QString alias, QString addr, QString privkey, QString txHash, QString txIndex, QString status)
 {
-    LOCK(cs_valverde);
+    LOCK(cs_adrenaline);
     bool bFound = false;
     int nodeRow = 0;
     for(int i=0; i < ui->tableWidget_2->rowCount(); i++)
@@ -117,13 +86,11 @@ void MasternodeManager::updateValverdeNode(QString alias, QString addr, QString 
 
     QTableWidgetItem *aliasItem = new QTableWidgetItem(alias);
     QTableWidgetItem *addrItem = new QTableWidgetItem(addr);
-    QTableWidgetItem *statusItem = new QTableWidgetItem("");
-    QTableWidgetItem *collateralItem = new QTableWidgetItem(collateral);
+    QTableWidgetItem *statusItem = new QTableWidgetItem(status);
 
     ui->tableWidget_2->setItem(nodeRow, 0, aliasItem);
     ui->tableWidget_2->setItem(nodeRow, 1, addrItem);
     ui->tableWidget_2->setItem(nodeRow, 2, statusItem);
-    ui->tableWidget_2->setItem(nodeRow, 3, collateralItem);
 }
 
 static QString seconds_to_DHMS(quint32 duration)
@@ -151,44 +118,38 @@ void MasternodeManager::updateNodeList()
     ui->countLabel->setText("Updating...");
     ui->tableWidget->clearContents();
     ui->tableWidget->setRowCount(0);
-    BOOST_FOREACH(CMasterNode mn, vecMasternodes) 
+    std::vector<CMasternode> vMasternodes = mnodeman.GetFullMasternodeVector();
+    BOOST_FOREACH(CMasternode& mn, vMasternodes)
     {
         int mnRow = 0;
         ui->tableWidget->insertRow(0);
 
- 	// populate list
-	// Address, Rank, Active, Active Seconds, Last Seen, Pub Key
-	QTableWidgetItem *activeItem = new QTableWidgetItem(QString::number(mn.IsEnabled()));
-	QTableWidgetItem *addressItem = new QTableWidgetItem(QString::fromStdString(mn.addr.ToString()));
-	QTableWidgetItem *rankItem = new QTableWidgetItem(QString::number(GetMasternodeRank(mn.vin, pindexBest->nHeight)));
-	QTableWidgetItem *activeSecondsItem = new QTableWidgetItem(seconds_to_DHMS((qint64)(mn.lastTimeSeen - mn.now)));
-	QTableWidgetItem *lastSeenItem = new QTableWidgetItem(QString::fromStdString(DateTimeStrFormat(mn.lastTimeSeen)));
-	
-	CScript pubkey;
+        // populate list
+        // Address, Rank, Active, Active Seconds, Last Seen, Pub Key
+        QTableWidgetItem *activeItem = new QTableWidgetItem(QString::number(mn.IsEnabled()));
+        QTableWidgetItem *addressItem = new QTableWidgetItem(QString::fromStdString(mn.addr.ToString()));
+        QString Rank = QString::number(mnodeman.GetMasternodeRank(mn.vin, pindexBest->nHeight));
+        QTableWidgetItem *rankItem = new QTableWidgetItem(Rank.rightJustified(2, '0', false));
+        QTableWidgetItem *activeSecondsItem = new QTableWidgetItem(seconds_to_DHMS((qint64)(mn.lastTimeSeen - mn.sigTime)));
+        QTableWidgetItem *lastSeenItem = new QTableWidgetItem(QString::fromStdString(DateTimeStrFormat(mn.lastTimeSeen)));
+
+        CScript pubkey;
         pubkey =GetScriptForDestination(mn.pubkey.GetID());
         CTxDestination address1;
         ExtractDestination(pubkey, address1);
-        CBitcoinAddress address2(address1);
-	QTableWidgetItem *pubkeyItem = new QTableWidgetItem(QString::fromStdString(address2.ToString()));
-	
-	ui->tableWidget->setItem(mnRow, 0, addressItem);
-	ui->tableWidget->setItem(mnRow, 1, rankItem);
-	ui->tableWidget->setItem(mnRow, 2, activeItem);
-	ui->tableWidget->setItem(mnRow, 3, activeSecondsItem);
-	ui->tableWidget->setItem(mnRow, 4, lastSeenItem);
-	ui->tableWidget->setItem(mnRow, 5, pubkeyItem);
+        CMarteXAddress address2(address1);
+        QTableWidgetItem *pubkeyItem = new QTableWidgetItem(QString::fromStdString(address2.ToString()));
+
+        ui->tableWidget->setItem(mnRow, 0, addressItem);
+        ui->tableWidget->setItem(mnRow, 1, rankItem);
+        ui->tableWidget->setItem(mnRow, 2, activeItem);
+        ui->tableWidget->setItem(mnRow, 3, activeSecondsItem);
+        ui->tableWidget->setItem(mnRow, 4, lastSeenItem);
+        ui->tableWidget->setItem(mnRow, 5, pubkeyItem);
     }
 
     ui->countLabel->setText(QString::number(ui->tableWidget->rowCount()));
-
-    if(pwalletMain)
-    {
-        LOCK(cs_valverde);
-        BOOST_FOREACH(PAIRTYPE(std::string, CValverdeNodeConfig) valverde, pwalletMain->mapMyValverdeNodes)
-        {
-            updateValverdeNode(QString::fromStdString(valverde.second.sAlias), QString::fromStdString(valverde.second.sAddress), QString::fromStdString(valverde.second.sMasternodePrivKey), QString::fromStdString(valverde.second.sCollateralAddress));
-        }
-    }
+    on_UpdateButton_clicked();
 }
 
 
@@ -211,81 +172,8 @@ void MasternodeManager::setWalletModel(WalletModel *model)
 
 void MasternodeManager::on_createButton_clicked()
 {
-    AddEditValverdeNode* aenode = new AddEditValverdeNode();
+    AddEditAdrenalineNode* aenode = new AddEditAdrenalineNode();
     aenode->exec();
-}
-
-void MasternodeManager::on_copyAddressButton_clicked()
-{
-    QItemSelectionModel* selectionModel = ui->tableWidget_2->selectionModel();
-    QModelIndexList selected = selectionModel->selectedRows();
-    if(selected.count() == 0)
-        return;
-
-    QModelIndex index = selected.at(0);
-    int r = index.row();
-    std::string sCollateralAddress = ui->tableWidget_2->item(r, 3)->text().toStdString();
-
-    QApplication::clipboard()->setText(QString::fromStdString(sCollateralAddress));
-}
-
-void MasternodeManager::on_editButton_clicked()
-{
-    QItemSelectionModel* selectionModel = ui->tableWidget_2->selectionModel();
-    QModelIndexList selected = selectionModel->selectedRows();
-    if(selected.count() == 0)
-        return;
-
-    QModelIndex index = selected.at(0);
-    int r = index.row();
-    std::string sAddress = ui->tableWidget_2->item(r, 1)->text().toStdString();
-
-    // get existing config entry
-
-}
-
-void MasternodeManager::on_getConfigButton_clicked()
-{
-    QItemSelectionModel* selectionModel = ui->tableWidget_2->selectionModel();
-    QModelIndexList selected = selectionModel->selectedRows();
-    if(selected.count() == 0)
-        return;
-
-    QModelIndex index = selected.at(0);
-    int r = index.row();
-    std::string sAddress = ui->tableWidget_2->item(r, 1)->text().toStdString();
-    CValverdeNodeConfig c = pwalletMain->mapMyValverdeNodes[sAddress];
-    std::string sPrivKey = c.sMasternodePrivKey;
-    ValverdeNodeConfigDialog* d = new ValverdeNodeConfigDialog(this, QString::fromStdString(sAddress), QString::fromStdString(sPrivKey));
-    d->exec();
-}
-
-void MasternodeManager::on_removeButton_clicked()
-{
-    QItemSelectionModel* selectionModel = ui->tableWidget_2->selectionModel();
-    QModelIndexList selected = selectionModel->selectedRows();
-    if(selected.count() == 0)
-        return;
-
-    QMessageBox::StandardButton confirm;
-    confirm = QMessageBox::question(this, "Delete MN-MarteXcoin Node?", "Are you sure you want to delete this mn-martexcoin node configuration?", QMessageBox::Yes|QMessageBox::No);
-
-    if(confirm == QMessageBox::Yes)
-    {
-        QModelIndex index = selected.at(0);
-        int r = index.row();
-        std::string sAddress = ui->tableWidget_2->item(r, 1)->text().toStdString();
-        CValverdeNodeConfig c = pwalletMain->mapMyValverdeNodes[sAddress];
-        CWalletDB walletdb(pwalletMain->strWalletFile);
-        pwalletMain->mapMyValverdeNodes.erase(sAddress);
-        walletdb.EraseValverdeNodeConfig(c.sAddress);
-        ui->tableWidget_2->clearContents();
-        ui->tableWidget_2->setRowCount(0);
-        BOOST_FOREACH(PAIRTYPE(std::string, CValverdeNodeConfig) valverde, pwalletMain->mapMyValverdeNodes)
-        {
-            updateValverdeNode(QString::fromStdString(valverde.second.sAlias), QString::fromStdString(valverde.second.sAddress), QString::fromStdString(valverde.second.sMasternodePrivKey), QString::fromStdString(valverde.second.sCollateralAddress));
-        }
-    }
 }
 
 void MasternodeManager::on_startButton_clicked()
@@ -298,90 +186,104 @@ void MasternodeManager::on_startButton_clicked()
 
     QModelIndex index = selected.at(0);
     int r = index.row();
-    std::string sAddress = ui->tableWidget_2->item(r, 1)->text().toStdString();
-    CValverdeNodeConfig c = pwalletMain->mapMyValverdeNodes[sAddress];
+    std::string sAlias = ui->tableWidget_2->item(r, 0)->text().toStdString();
 
-    std::string errorMessage;
-    bool result = activeMasternode.RegisterByPubKey(c.sAddress, c.sMasternodePrivKey, c.sCollateralAddress, errorMessage);
+
+
+    if(pwalletMain->IsLocked()) {
+    }
+
+    std::string statusObj;
+    statusObj += "<center>Alias: " + sAlias;
+
+    BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+        if(mne.getAlias() == sAlias) {
+            std::string errorMessage;
+            std::string strDonateAddress = "";
+            std::string strDonationPercentage = "";
+
+            bool result = activeMasternode.Register(mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex(), strDonateAddress, strDonationPercentage, errorMessage);
+
+            if(result) {
+                statusObj += "<br>Successfully started masternode." ;
+            } else {
+                statusObj += "<br>Failed to start masternode.<br>Error: " + errorMessage;
+            }
+            break;
+        }
+    }
+    statusObj += "</center>";
+    pwalletMain->Lock();
 
     QMessageBox msg;
-    if(result)
-        msg.setText("MN-MarteXcoin Node at " + QString::fromStdString(c.sAddress) + " started.");
-    else
-        msg.setText("Error: " + QString::fromStdString(errorMessage));
+    msg.setText(QString::fromStdString(statusObj));
 
-    msg.exec();
-}
-
-void MasternodeManager::on_stopButton_clicked()
-{
-    // start the node
-    QItemSelectionModel* selectionModel = ui->tableWidget_2->selectionModel();
-    QModelIndexList selected = selectionModel->selectedRows();
-    if(selected.count() == 0)
-        return;
-
-    QModelIndex index = selected.at(0);
-    int r = index.row();
-    std::string sAddress = ui->tableWidget_2->item(r, 1)->text().toStdString();
-    CValverdeNodeConfig c = pwalletMain->mapMyValverdeNodes[sAddress];
-
-    std::string errorMessage;
-    bool result = activeMasternode.StopMasterNode(c.sAddress, c.sMasternodePrivKey, errorMessage);
-    QMessageBox msg;
-    if(result)
-    {
-        msg.setText("MN-MarteXcoin Node at " + QString::fromStdString(c.sAddress) + " stopped.");
-    }
-    else
-    {
-        msg.setText("Error: " + QString::fromStdString(errorMessage));
-    }
     msg.exec();
 }
 
 void MasternodeManager::on_startAllButton_clicked()
 {
-    std::string results;
-    BOOST_FOREACH(PAIRTYPE(std::string, CValverdeNodeConfig) valverde, pwalletMain->mapMyValverdeNodes)
-    {
-        CValverdeNodeConfig c = valverde.second;
-	std::string errorMessage;
-        bool result = activeMasternode.RegisterByPubKey(c.sAddress, c.sMasternodePrivKey, c.sCollateralAddress, errorMessage);
-	if(result)
-	{
-   	    results += c.sAddress + ": STARTED\n";
-	}	
-	else
-	{
-	    results += c.sAddress + ": ERROR: " + errorMessage + "\n";
-	}
+    if(pwalletMain->IsLocked()) {
     }
 
+    std::vector<CMasternodeConfig::CMasternodeEntry> mnEntries;
+
+    int total = 0;
+    int successful = 0;
+    int fail = 0;
+    std::string statusObj;
+
+    BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+        total++;
+
+        std::string errorMessage;
+        std::string strDonateAddress = "";
+        std::string strDonationPercentage = "";
+
+        bool result = activeMasternode.Register(mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex(), strDonateAddress, strDonationPercentage, errorMessage);
+
+        if(result) {
+            successful++;
+        } else {
+            fail++;
+            statusObj += "\nFailed to start " + mne.getAlias() + ". Error: " + errorMessage;
+        }
+    }
+    pwalletMain->Lock();
+
+    std::string returnObj;
+    returnObj = "Successfully started " + boost::lexical_cast<std::string>(successful) + " masternodes, failed to start " +
+            boost::lexical_cast<std::string>(fail) + ", total " + boost::lexical_cast<std::string>(total);
+    if (fail > 0)
+        returnObj += statusObj;
+
     QMessageBox msg;
-    msg.setText(QString::fromStdString(results));
+    msg.setText(QString::fromStdString(returnObj));
     msg.exec();
 }
 
-void MasternodeManager::on_stopAllButton_clicked()
+void MasternodeManager::on_UpdateButton_clicked()
 {
-    std::string results;
-    BOOST_FOREACH(PAIRTYPE(std::string, CValverdeNodeConfig) valverde, pwalletMain->mapMyValverdeNodes)
-    {
-        CValverdeNodeConfig c = valverde.second;
-	std::string errorMessage;
-        bool result = activeMasternode.StopMasterNode(c.sAddress, c.sMasternodePrivKey, errorMessage);
-	if(result)
-	{
-   	    results += c.sAddress + ": STOPPED\n";
-	}	
-	else
-	{
-	    results += c.sAddress + ": ERROR: " + errorMessage + "\n";
-	}
-    }
+    BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+        std::string errorMessage;
+        std::string strDonateAddress = "";
+        std::string strDonationPercentage = "";
 
-    QMessageBox msg;
-    msg.setText(QString::fromStdString(results));
-    msg.exec();
+        std::vector<CMasternode> vMasternodes = mnodeman.GetFullMasternodeVector();
+        if (errorMessage == ""){
+            updateAdrenalineNode(QString::fromStdString(mne.getAlias()), QString::fromStdString(mne.getIp()), QString::fromStdString(mne.getPrivKey()), QString::fromStdString(mne.getTxHash()),
+                QString::fromStdString(mne.getOutputIndex()), QString::fromStdString("Not in the masternode list."));
+        }
+        else {
+            updateAdrenalineNode(QString::fromStdString(mne.getAlias()), QString::fromStdString(mne.getIp()), QString::fromStdString(mne.getPrivKey()), QString::fromStdString(mne.getTxHash()),
+                QString::fromStdString(mne.getOutputIndex()), QString::fromStdString(errorMessage));
+        }
+
+        BOOST_FOREACH(CMasternode& mn, vMasternodes) {
+            if (mn.addr.ToString().c_str() == mne.getIp()){
+                updateAdrenalineNode(QString::fromStdString(mne.getAlias()), QString::fromStdString(mne.getIp()), QString::fromStdString(mne.getPrivKey()), QString::fromStdString(mne.getTxHash()),
+                QString::fromStdString(mne.getOutputIndex()), QString::fromStdString("Masternode is Running."));
+            }
+        }
+    }
 }

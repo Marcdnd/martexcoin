@@ -1,12 +1,14 @@
 #ifndef COINCONTROL_H
 #define COINCONTROL_H
 
+#include "core.h"
+
 /** Coin Control Features. */
 class CCoinControl
 {
 public:
     CTxDestination destChange;
-    bool useAnonSend;
+    bool useDarkSend;
     bool useInstantX;
 
     CCoinControl()
@@ -18,6 +20,8 @@ public:
     {
         destChange = CNoDestination();
         setSelected.clear();
+        useInstantX = false;
+        useDarkSend = true;
     }
     
     bool HasSelected() const
@@ -44,8 +48,6 @@ public:
     void UnSelectAll()
     {
         setSelected.clear();
-        useInstantX = false;
-        useAnonSend = true;
     }
 
     void ListSelected(std::vector<COutPoint>& vOutpoints)
