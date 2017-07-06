@@ -1212,16 +1212,15 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
                std::string str(s, 34);
                std::string rpcpass = "rpcpassword=" + str + "\n";
                fprintf(ConfFile, rpcpass.c_str());
-               fprintf(ConfFile, "port=10255\n");
-               fprintf(ConfFile, "rpcport=10257\n");
+               fprintf(ConfFile, "port=51315\n");
+               fprintf(ConfFile, "rpcport=51314\n");
                fprintf(ConfFile, "rpcconnect=127.0.0.1\n");
                fprintf(ConfFile, "rpcallowip=127.0.0.1\n");
-               fprintf(ConfFile, "addnode=195.74.52.227\n");
-               fprintf(ConfFile, "addnode=149.56.66.5\n");
-               fprintf(ConfFile, "addnode=74.208.43.97\n");
-               fprintf(ConfFile, "addnode=164.132.176.100\n");
-               fprintf(ConfFile, "addnode=24.233.181.42\n");
-               fprintf(ConfFile, "addnode=149.56.66.2\n");
+               fprintf(ConfFile, "addnode=138.68.7.176\n");
+               fprintf(ConfFile, "addnode=107.170.67.22\n");
+               fprintf(ConfFile, "addnode=45.32.226.215\n");
+               fprintf(ConfFile, "addnode=45.32.225.215\n");
+               fprintf(ConfFile, "addnode=104.236.10.105\n");
 
                fclose(ConfFile);
 

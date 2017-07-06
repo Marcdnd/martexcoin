@@ -45,10 +45,10 @@ reachable from the Tor network. Add these lines to your /etc/tor/torrc (or equiv
 config file):
 
   HiddenServiceDir /var/lib/tor/MarteX-service/
-  HiddenServicePort 10255 127.0.0.1:10255
+  HiddenServicePort 51315 127.0.0.1:51315
 
 The directory can be different of course, but (both) port numbers should be equal to
-your MarteXd's P2P listen port (10255 by default).
+your MarteXd's P2P listen port (51315 by default).
 
 -externalip=X   You can tell litecoin about its publicly reachable address using
                 this option, and this can be a .onion address. Given the above
@@ -78,7 +78,7 @@ specify:
 
   ./MarteXd ... -discover
 
-and open port 10255 on your firewall (or use -upnp).
+and open port 51315 on your firewall (or use -upnp).
 
 If you only want to use Tor to reach onion addresses, but not use it as a proxy
 for normal IPv4/IPv6 communication, use:

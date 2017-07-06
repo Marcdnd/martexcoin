@@ -127,6 +127,8 @@ OBJS= \
     obj/groestl.o\
     obj/jh.o\
     obj/keccak.o\
+    obj/fugue.o \
+    obj/hamsi.o \
     obj/skein.o
 
 ifeq (${USE_WALLET}, 1)
