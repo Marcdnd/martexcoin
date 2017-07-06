@@ -92,11 +92,11 @@ static const int64_t COIN_SPRB_REWARD_FIXED = 3 * CENT; // 3%
 /** MN Reward Fixed */
 static const int64_t MN_REWARD_FIXED = 9 * CENT; // 9% total, 1.5%/3% for standard net, 7.5%/6% for MNs
 /** Block spacing preferred */
-static const int64_t BLOCK_SPACING = 5 * 60;
+static const int64_t BLOCK_SPACING = 2 * 60;
 /** Block spacing minimum */
-static const int64_t BLOCK_SPACING_MIN = 3.5 * 60;
+static const int64_t BLOCK_SPACING_MIN = 1.5 * 60;
 /** Block spacing maximum */
-static const int64_t BLOCK_SPACING_MAX = 7.5 * 60;
+static const int64_t BLOCK_SPACING_MAX = 3.5 * 60;
 /** Darksend collateral */
 static const int64_t DARKSEND_COLLATERAL = (0.01*COIN);
 /** Darksend pool values */
@@ -140,17 +140,17 @@ static const unsigned int nNonceTest = 0;
 /** Genesis block subsidy */
 static const int64_t nGenesisBlockReward = 1 * COIN;
 /** Reserve block subsidy */
-static const int64_t nBlockRewardReserve = 1840010 * COIN; //
+static const int64_t nBlockRewardReserve = 1369192.5 * COIN; //
 /** Starting block subsidy */
-static const int64_t nBlockPoWReward = 1 * COIN;
+static const int64_t nBlockPoWReward = 0.05 * COIN;
 /** Superblock subsidy */
-static const int64_t nSuperPoWReward = 2 * COIN;
-/** Genesis Block Height */                                                     
+static const int64_t nSuperPoWReward = 0.50 * COIN;
+/** Genesis Block Height */
 static const int64_t nGenesisHeight = 0;
-/** Reserve Phase start block */ 
+/** Reserve Phase start block */
 static const int64_t nReservePhaseStart = 1;
-/** Reserve Phase end block */ 
-static const int64_t nReservePhaseEnd = 12; // 
+/** Reserve Phase end block */
+static const int64_t nReservePhaseEnd = 2; //
 /** Main Net Genesis Block */
 static const uint256 nGenesisBlock("0xbe10a5eb2ff7c7f2c958826bc773b05748cf3c8c851744425e1af311ed36e502");
 /** Test Net Genesis Block */
