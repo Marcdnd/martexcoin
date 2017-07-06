@@ -70,7 +70,7 @@ static const int64_t MIN_TX_COUNT = 0;
 /** Minimum TX value (for relaying) */
 static const int64_t MIN_TX_VALUE = 0.01 * COIN;
 /** No amount larger than this (in satoshi) is valid */
-static const int64_t MAX_SINGLE_TX = 30000000 * COIN; // 30 Million MarteX coins
+static const int64_t MAX_SINGLE_TX = 5000000 * COIN; // 5 Million MarteX coins
 /** Moneyrange params */
 inline bool MoneyRange(int64_t nValue) { return (nValue >= 0 && nValue <= MAX_SINGLE_TX); }
 /** Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp. */
@@ -120,7 +120,7 @@ static const int64_t GetTargetSpacing = BLOCK_SPACING;
 /** "reject" message codes **/
 static const unsigned char REJECT_INVALID = 0x10;
 /** MasterNode required collateral */
-inline int64_t MasternodeCollateral(int nHeight) { return 50000; } // 50K MXT required as collateral
+inline int64_t MasternodeCollateral(int nHeight) { return 5000; } // 5K MXT required as collateral
 /** Coinbase transaction outputs can only be staked after this number of new blocks (network rule) */
 static const int nStakeMinConfirmations = 15;
 /** Coinbase transaction outputs can only be spent after this number of new blocks (network rule) */
