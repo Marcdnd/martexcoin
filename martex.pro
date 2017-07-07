@@ -326,7 +326,6 @@ HEADERS += src/qt/bitcoingui.h \
     src/qt/blockbrowser.h \
     src/qt/plugins/mrichtexteditor/mrichtextedit.h \
     src/qt/qvalidatedtextedit.h \
-    src/qt/tradingdialog.h \
     src/sph_skein.h \
     src/sph_keccak.h \
     src/sph_jh.h \
@@ -455,7 +454,6 @@ SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/qt/blockbrowser.cpp \
     src/qt/qvalidatedtextedit.cpp \
     src/qt/plugins/mrichtexteditor/mrichtextedit.cpp \
-    src/qt/tradingdialog.cpp \
     src/rpcsmessage.cpp \
     src/blake.c \
     src/bmw.c \
@@ -495,7 +493,6 @@ FORMS += \
     src/qt/forms/sendmessagesentry.ui \
     src/qt/forms/sendmessagesdialog.ui \
     src/qt/forms/blockbrowser.ui \
-    src/qt/forms/tradingdialog.ui \
     src/qt/plugins/mrichtexteditor/mrichtextedit.ui
 
 contains(USE_QRCODE, 1) {
