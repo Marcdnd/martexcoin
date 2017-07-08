@@ -104,6 +104,7 @@ public:
         vSeeds.push_back(CDNSSeedData("seed1",  "seed1.martexcoin.org"));
         vSeeds.push_back(CDNSSeedData("seed2",  "seed2.martexcoin.org"));
         vSeeds.push_back(CDNSSeedData("seed3",  "seed3.martexcoin.org"));
+        vSeeds.push_back(CDNSSeedData("seed4",  "seed4.martexcoin.org"));
         convertSeed6(vFixedSeeds, pnSeed6_main, ARRAYLEN(pnSeed6_main));
 
         nPoolMaxTransactions = 3;

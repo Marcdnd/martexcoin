@@ -124,7 +124,7 @@ inline int64_t MasternodeCollateral(int nHeight) { return 5000; } // 5K MXT requ
 /** Coinbase transaction outputs can only be staked after this number of new blocks (network rule) */
 static const int nStakeMinConfirmations = 15;
 /** Coinbase transaction outputs can only be spent after this number of new blocks (network rule) */
-static const int nCoinbaseMaturity = 15; // 15-TXs | 90-Mined
+static const int nCoinbaseMaturity = 3; // 3-TXs | 5-Mined
 /** Minimum nCoinAge required to stake PoS */
 static const unsigned int nStakeMinAge = 2 / 60; // 30 minutes
 /** Time to elapse before new modifier is computed */
@@ -148,7 +148,7 @@ static const int64_t nSuperPoWReward = 0.50 * COIN;
 /** Genesis Block Height */
 static const int64_t nGenesisHeight = 0;
 /** Reserve Phase start block */
-static const int64_t nReservePhaseStart = 1;
+static const int64_t nReservePhaseStart = 0;
 /** Reserve Phase end block */
 static const int64_t nReservePhaseEnd = 2; //
 /** Main Net Genesis Block */
