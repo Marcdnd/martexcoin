@@ -84,13 +84,13 @@ static const unsigned int DEFAULT_SCALE_BLOCK_SIZE_OPTIONS = 1;
 /** PoS Reward */
 static const int64_t COIN_YEAR_REWARD = 1.5 * COIN; // Corrected in v1.0.2.0+
 /** PoS Reward Fixed */
-static const int64_t COIN_YEAR_REWARD_FIXED = 1.5 * CENT; // 1.5%
+static const int64_t COIN_YEAR_REWARD_FIXED = 50 * CENT; // 50%
 /** PoS Superblock Reward */
 static const int64_t COIN_SPRB_REWARD = 3 * COIN; // Corrected in v1.0.2.0+
 /** PoS Superblock Reward Fixed */
-static const int64_t COIN_SPRB_REWARD_FIXED = 3 * CENT; // 3%
+static const int64_t COIN_SPRB_REWARD_FIXED = 55 * CENT; // 55%
 /** MN Reward Fixed */
-static const int64_t MN_REWARD_FIXED = 9 * CENT; // 9% total, 1.5%/3% for standard net, 7.5%/6% for MNs
+static const int64_t MN_REWARD_FIXED = 50 * CENT;
 /** Block spacing preferred */
 static const int64_t BLOCK_SPACING = 2 * 60;
 /** Block spacing minimum */
@@ -145,6 +145,8 @@ static const int64_t nBlockRewardReserve = 1369192.5 * COIN; //
 static const int64_t nBlockPoWReward = 0.05 * COIN;
 /** Superblock subsidy */
 static const int64_t nSuperPoWReward = 0.50 * COIN;
+/** Swap fase subsidy */
+static const int64_t nSwapFaseReward = 0 * COIN;
 /** Genesis Block Height */
 static const int64_t nGenesisHeight = 0;
 /** Reserve Phase start block */
