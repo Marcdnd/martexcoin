@@ -150,7 +150,7 @@ static const int64_t nGenesisHeight = 0;
 /** Reserve Phase start block */
 static const int64_t nReservePhaseStart = 0;
 /** Reserve Phase end block */
-static const int64_t nReservePhaseEnd = 2; //
+static const int64_t nReservePhaseEnd = 3;
 /** Main Net Genesis Block */
 static const uint256 nGenesisBlock("0xbe10a5eb2ff7c7f2c958826bc773b05748cf3c8c851744425e1af311ed36e502");
 /** Test Net Genesis Block */
