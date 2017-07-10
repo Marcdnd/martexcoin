@@ -94,6 +94,7 @@ TransactionView::TransactionView(QWidget *parent) :
     typeWidget->addItem(tr("Darksend Collateral Payment"), TransactionFilterProxy::TYPE(TransactionRecord::DarksendCollateralPayment));
     typeWidget->addItem(tr("To yourself"), TransactionFilterProxy::TYPE(TransactionRecord::SendToSelf));
     typeWidget->addItem(tr("Mined"), TransactionFilterProxy::TYPE(TransactionRecord::Generated));
+    typeWidget->addItem(tr("Stake"), TransactionFilterProxy::TYPE(TransactionRecord::StakeMint));
     typeWidget->addItem(tr("Other"), TransactionFilterProxy::TYPE(TransactionRecord::Other));
     typeWidget->setCurrentIndex(settings.value("transactionType").toInt());
 

@@ -357,6 +357,8 @@ QString TransactionTableModel::formatTxType(const TransactionRecord *wtx) const
         return tr("Payment to yourself");
     case TransactionRecord::Generated:
         return tr("Mined");
+    case TransactionRecord::StakeMint:
+        return tr("Stake");
 
     case TransactionRecord::DarksendDenominate:
         return tr("Darksend Denominate");
@@ -379,6 +381,7 @@ QVariant TransactionTableModel::txAddressDecoration(const TransactionRecord *wtx
     switch(wtx->type)
     {
     case TransactionRecord::Generated:
+    case TransactionRecord::StakeMint:
         return QIcon(fUseBlackTheme ? ":/icons/black/tx_mined" : ":/icons/tx_mined");
     case TransactionRecord::RecvWithDarksend:
     case TransactionRecord::RecvWithAddress:
@@ -408,6 +411,7 @@ QString TransactionTableModel::formatTxToAddress(const TransactionRecord *wtx, b
     case TransactionRecord::RecvWithDarksend:
     case TransactionRecord::SendToAddress:
     case TransactionRecord::Generated:
+    case TransactionRecord::StakeMint:
     case TransactionRecord::Darksent:
         return lookupAddress(wtx->address, tooltip) + watchAddress;
     case TransactionRecord::SendToOther:
@@ -426,6 +430,7 @@ QVariant TransactionTableModel::addressColor(const TransactionRecord *wtx) const
     case TransactionRecord::RecvWithAddress:
     case TransactionRecord::SendToAddress:
     case TransactionRecord::Generated:
+    case TransactionRecord::StakeMint:
         {
         QString label = walletModel->getAddressTableModel()->labelForAddress(QString::fromStdString(wtx->address));
         if(label.isEmpty())

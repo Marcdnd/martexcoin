@@ -43,7 +43,7 @@ SendCoinsDialog::SendCoinsDialog(QWidget *parent) :
 
 #if QT_VERSION >= 0x040700
     /* Do not move this to the XML file, Qt before 4.7 will choke on it */
-    ui->lineEditCoinControlChange->setPlaceholderText(tr("Enter a MarteX address (e.g. iACLambeGgkxodKtfzM7huFXyPYWjz33Z2)"));
+    ui->lineEditCoinControlChange->setPlaceholderText(tr("Enter a MarteX address (e.g. MLaZBUkdM15PjB7Zmbmwfwi31L3KeExgFG)"));
 #endif
 
     addEntry();

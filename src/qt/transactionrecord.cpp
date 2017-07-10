@@ -83,7 +83,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                         if (!MoneyRange(txout.nValue) || !MoneyRange(nValueOut))
                             throw std::runtime_error("CTransaction::GetValueOut() : value out of range");
                     }
-                    sub.type = TransactionRecord::Generated;
+                    sub.type = TransactionRecord::StakeMint;
                     sub.credit = nNet > 0 ? nNet : nValueOut - nDebit;
                     hashPrev = hash;
                 }
@@ -274,7 +274,7 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
     }
 
     // For generated transactions, determine maturity
-    else if(type == TransactionRecord::Generated)
+    else if(type == TransactionRecord::Generated || type == TransactionRecord::StakeMint)
     {
         if (wtx.GetBlocksToMaturity() > 0)
         {

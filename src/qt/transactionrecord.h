@@ -76,6 +76,7 @@ public:
         RecvWithAddress,
         RecvFromOther,
         SendToSelf,
+	StakeMint,
         RecvWithDarksend,
         DarksendDenominate,
         DarksendCollateralPayment,
