@@ -19,8 +19,8 @@
 #define START_MASTERNODE_PAYMENTS_TESTNET 1495238400 // Sat, 20 May 2017 00:00:00 GMT
 #define START_MASTERNODE_PAYMENTS 1495238400         // Sat, 20 May 2017 00:00:00 GMT
 
-#define INSTANTX_SIGNATURES_REQUIRED           10
-#define INSTANTX_SIGNATURES_TOTAL              15
+#define INSTANTX_SIGNATURES_REQUIRED           05
+#define INSTANTX_SIGNATURES_TOTAL              10
 
 // Define difficulty retarget algorithms
 enum DiffMode {
