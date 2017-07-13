@@ -47,10 +47,11 @@ public:
         // The message start string is designed to be unlikely to occur in normal data.
         // The characters are rarely used upper ASCII, not valid as UTF-8, and produce
         // a large 4-byte int at any alignment.
-        pchMessageStart[0] = 0xd1;
-        pchMessageStart[1] = 0x2e;
-        pchMessageStart[2] = 0x1e;
-        pchMessageStart[3] = 0xe6;
+        pchMessageStart[0] = 0x2d;
+        pchMessageStart[1] = 0x3f;
+        pchMessageStart[2] = 0xa2;
+        pchMessageStart[3] = 0xf5;
+
         vAlertPubKey = ParseHex("046acdcdecdea7b6b17c217f27e73ca2acbddda8e70570ff355dbe1af30347d280f66067d136a797fce4d01227cc5be988676184d842930765fcce5dc011ad158e");
         nDefaultPort = 51314;
         nRPCPort = 51315;
@@ -135,10 +136,11 @@ public:
         // The message start string is designed to be unlikely to occur in normal data.
         // The characters are rarely used upper ASCII, not valid as UTF-8, and produce
         // a large 4-byte int at any alignment.
-        pchMessageStart[0] = 0x2f;
-        pchMessageStart[1] = 0xca;
-        pchMessageStart[2] = 0x4d;
-        pchMessageStart[3] = 0x3e;
+        pchMessageStart[0] = 0x70;
+        pchMessageStart[1] = 0x35;
+        pchMessageStart[2] = 0x22;
+        pchMessageStart[3] = 0x05;
+
         bnProofOfWorkLimit = CBigNum(~uint256(0) >> 16);
         bnProofOfStakeLimit = CBigNum(~uint256(0) >> 16);
         vAlertPubKey = ParseHex("04da6ac103778f420a56c8d3b47133ad05872a6eeae68a29e765d4d98b8273361fd0bc7cab6fa28463611b852cfca06afd41e8dab8ce48736763c07d2015736469");
@@ -168,7 +170,7 @@ public:
         vSeeds.clear();
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,192);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
         base58Prefixes[SECRET_KEY]     = std::vector<unsigned char>(1,324);
         base58Prefixes[STEALTH_ADDRESS] = std::vector<unsigned char>(1,40);
         base58Prefixes[EXT_PUBLIC_KEY] = list_of(0x04)(0x35)(0x87)(0xCF).convert_to_container<std::vector<unsigned char> >();
