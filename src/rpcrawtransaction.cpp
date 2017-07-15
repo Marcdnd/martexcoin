@@ -274,20 +274,28 @@ Value createrawtransaction(const Array& params, bool fHelp)
     set<CMarteXAddress> setAddress;
     BOOST_FOREACH(const Pair& s, sendTo)
     {
-        CMarteXAddress address(s.name_);
-        if (!address.IsValid())
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid MarteX address: ")+s.name_);
+        if (s.name_ == "data") {
+            std::vector<unsigned char> data = ParseHexV(s.value_,"Data");
+            CTxOut out(0, CScript() << OP_RETURN << data);
+            rawTx.vout.push_back(out);
+        }
+        else
+        {
+           CMarteXAddress address(s.name_);
+           if (!address.IsValid())
+               throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid MarteX address: ")+s.name_);
 
-        if (setAddress.count(address))
-            throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ")+s.name_);
-        setAddress.insert(address);
+           if (setAddress.count(address))
+               throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ")+s.name_);
+           setAddress.insert(address);
 
-        CScript scriptPubKey;
-        scriptPubKey.SetDestination(address.Get());
-        CAmount nAmount = AmountFromValue(s.value_);
+           CScript scriptPubKey;
+           scriptPubKey.SetDestination(address.Get());
+           CAmount nAmount = AmountFromValue(s.value_);
 
-        CTxOut out(nAmount, scriptPubKey);
-        rawTx.vout.push_back(out);
+           CTxOut out(nAmount, scriptPubKey);
+           rawTx.vout.push_back(out);
+        }
     }
 
     CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
