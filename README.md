@@ -24,7 +24,7 @@ MarteX uses libsecp256k1,
 			  QT5.8 to compile
 
 
-Block Spacing: 5 Minutes
+Block Spacing: 1 Minutes
 Stake Minimum Age: 15 Confirmations (PoS-v3) | 30 Minutes (PoS-v2)
 
 Port: 51315
