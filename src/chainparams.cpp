@@ -71,25 +71,11 @@ public:
         genesis.hashPrevBlock = 0;
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
         genesis.nVersion = 1;
-        genesis.nTime    = 1498159985; // Mon, 01 May 2017 00:00:00 GMT
+        genesis.nTime    = 1498159985;
         genesis.nBits    = bnProofOfWorkLimit.GetCompact();
         genesis.nNonce   = 857701;
 
-        /** Genesis Block MainNet */
-        /*
-        Hashed MainNet Genesis Block Output
-        block.hashMerkleRoot == e7dba9a3b6015db6a7e3184106c0f813f525b9d4528f36d6f4da0927c9bf0a5f
-        block.nTime = 1493596800
-        block.nNonce = 192744
-        block.GetHash = 00001f66cb3ba8f5776cb750d621cb3390200580cc39f076b3f61efcf191fba0
-        */
         hashGenesisBlock = genesis.GetHash();
-
-        //printf("MAIN genesis.BlockHash = %s\n", genesis.GetHash().ToString().c_str());
-        //printf("MAIN genesis.MerkleRoot = %s\n", genesis.hashMerkleRoot.ToString().c_str());
-
-        //assert(hashGenesisBlock == nGenesisBlock);
-        //assert(genesis.hashMerkleRoot == nGenesisMerkle);
 
 	assert(hashGenesisBlock == uint256("0x617fc383b07fbab3505213b41fe34f9705b92d854a9f72593cb616e4726e155c"));
         assert(genesis.hashMerkleRoot == uint256("0x04035aa1d2a55488b3a8e4f84beb66e30a428140e88071ac83b7b333b0425e48"));
@@ -101,15 +87,15 @@ public:
         base58Prefixes[EXT_PUBLIC_KEY] = list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[EXT_SECRET_KEY] = list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container<std::vector<unsigned char> >();
 
-        vSeeds.push_back(CDNSSeedData("seed0",  "seed.martexcoin.org"));
-        vSeeds.push_back(CDNSSeedData("seed1",  "seed1.martexcoin.org"));
-        vSeeds.push_back(CDNSSeedData("seed2",  "seed2.martexcoin.org"));
-        vSeeds.push_back(CDNSSeedData("seed3",  "seed3.martexcoin.org"));
-        vSeeds.push_back(CDNSSeedData("seed4",  "seed4.martexcoin.org"));
+        vSeeds.push_back(CDNSSeedData("seed0",  "seed.martexcoin.org:51315"));
+        vSeeds.push_back(CDNSSeedData("seed1",  "seed1.martexcoin.org:51315"));
+        vSeeds.push_back(CDNSSeedData("seed2",  "seed2.martexcoin.org:51315"));
+        vSeeds.push_back(CDNSSeedData("seed3",  "seed3.martexcoin.org:51315"));
+        vSeeds.push_back(CDNSSeedData("seed4",  "seed4.martexcoin.org:51315"));
         convertSeed6(vFixedSeeds, pnSeed6_main, ARRAYLEN(pnSeed6_main));
 
         nPoolMaxTransactions = 3;
-        strDarksendPoolDummyAddress = "iGrwXgFQbhiSBsxVSSCeQmty2qzCt4uS7Q";
+        strDarksendPoolDummyAddress = "MLJoZZky8GtfYKiRY2Jzxfd4KTEK3drZv2";
         nEndPoWBlock = 0x7fffffff;
         nStartPoSBlock = 0;
     }
@@ -153,17 +139,8 @@ public:
         genesis.nBits  = bnProofOfWorkLimit.GetCompact();
         genesis.nNonce = 857701;
 
-        /** Genesis Block TestNet */
-        /*
-        Hashed TestNet Genesis Block Output
-        block.hashMerkleRoot == e7dba9a3b6015db6a7e3184106c0f813f525b9d4528f36d6f4da0927c9bf0a5f
-        block.nTime = 1493596830
-        block.nNonce = 5925
-        block.GetHash = 0000ae1d0aaeda3c5554fc4d5192c481d002174e33985bb8c855edd899fd0346
-        */
         hashGenesisBlock = genesis.GetHash();
-        //printf("TESTNET genesis.BlockHash = %s\n", genesis.GetHash().ToString().c_str());
-        //assert(hashGenesisBlock == hashTestNetGenesisBlock);
+
 	assert(hashGenesisBlock == uint256("0xbe10a5eb2ff7c7f2c958826bc773b05748cf3c8c851744425e1af311ed36e502"));
 
         vFixedSeeds.clear();
@@ -199,17 +176,6 @@ public:
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 31314;
         strDataDir = "regtest";
-		
-        /** Genesis Block TestNet */
-        /*
-        Hashed RegNet Genesis Block Output
-        block.hashMerkleRoot == e7dba9a3b6015db6a7e3184106c0f813f525b9d4528f36d6f4da0927c9bf0a5f
-        block.nTime = 1493596890
-        block.nNonce = 8
-        block.GetHash = b772ef430a34e04f015ab7a4e4fbe2e882794a83b1dc0056573d74880649d073
-        */
-        //printf("REGTESTNET genesis.BlockHash = %s\n", genesis.GetHash().ToString().c_str());
-        //assert(hashGenesisBlock == hashRegNetGenesisBlock);
 	assert(hashGenesisBlock == uint256("0xbe10a5eb2ff7c7f2c958826bc773b05748cf3c8c851744425e1af311ed36e502"));
 
         vSeeds.clear();  // Regtest mode doesn't have any DNS seeds.
